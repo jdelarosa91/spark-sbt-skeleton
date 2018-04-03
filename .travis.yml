@@ -19,7 +19,7 @@ script:
   - find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm
 
 after_success:
-  - sbt coveralls
+  - sbt test assembly
 
 notifications:
   email:
