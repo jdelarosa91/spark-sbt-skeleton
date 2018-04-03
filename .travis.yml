@@ -1,38 +1,25 @@
 language: scala
-sudo: required
-dist: precise
-cache:
-  directories:
-    - $HOME/.ivy2
-    - $HOME/spark
-    - $HOME/.cache/pip
-    - $HOME/.pip-cache
-    - $HOME/.sbt/launchers
+
 jdk:
   - oraclejdk8
 scala:
    - 2.11.6
 sudo: false
 
-addons:
-  apt:
-    packages:
-      - axel
-
-before_install:
- - export PATH=$HOME/.local/bin:$PATH
-
-install:
- # Download spark 2.2.1
- - "[ -f spark ] || mkdir spark && cd spark && axel http://www-us.apache.org/dist/spark/spark-2.3.0/spark-2.3.0-bin-hadoop2.7.tgz"
- - "tar -xf ./spark-2.3.0-bin-hadoop2.7.tgz"
- - "export SPARK_HOME=`pwd`/spark-2.3.0-bin-hadoop2.7"
- - echo "spark.yarn.jars=$SPARK_HOME/jars/*.jar" > $SPARK_HOME/conf/spark-defaults.conf
+cache:
+  directories:
+    - $HOME/.ivy2/cache
+    - $HOME/.sbt/boot/
 
 script:
- - ./sbt/sbt scalastyle
- - SPARK_CONF_DIR=./log4j/ ./sbt/sbt clean coverage test coverageReport
- - cp ./log4j/log4j.properties $SPARK_HOME/conf/
+  - sbt ++$TRAVIS_SCALA_VERSION clean coverage test scalastyle
+
+  # Trick to avoid unnecessary cache updates
+  - find $HOME/.sbt -name "*.lock" | xargs rm
+  - find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm
+
+after_success:
+  - sbt coveralls
 
 notifications:
   email:
