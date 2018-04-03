@@ -28,6 +28,7 @@ object Main {
     } else {
       spark = SparkSession
         .builder()
+        .config("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
         .appName("WordCount")
         .enableHiveSupport()
         .getOrCreate()
