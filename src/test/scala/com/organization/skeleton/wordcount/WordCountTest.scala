@@ -16,7 +16,7 @@ class WordCountTest extends FlatSpec with Matchers with SharedSparkContext {
     val count = WordCount.count(text).collectAsMap()
 
     count.get("bye").get shouldBe 2
-    count.get("hello").get shouldBe 3
+    count.get("hello").get shouldBe 2
 
   }
 }
